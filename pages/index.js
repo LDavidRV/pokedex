@@ -26,6 +26,7 @@ const Home = () => {
       console.log(error);
     }
   };
+  
 
   const handleLoadMore = async () => {
     try {
