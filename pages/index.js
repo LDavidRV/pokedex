@@ -6,50 +6,50 @@ import styles from "../styles/Home.module.css";
 const Home = () => {
   const [pokemonList, setPokemonList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [displayedPokemon, setDisplayedPokemon] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
     fetchPokemonList();
   }, []);
-
+  
   const fetchPokemonList = async () => {
     try {
       const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1000");
       const data = await response.json();
       setPokemonList(data.results);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
     }
   };
-
-  const handleLoadMore = async () => {
-    try {
-      const offset = pokemonList.length;
-      const response = await fetch(
-        `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=20`
-      );
-      const data = await response.json();
-      setPokemonList((prevList) => [...prevList, ...data.results]);
-    } catch (error) {
-      console.log(error);
-    }
+    
+  const handleLoadMore = () => {
+    const offset = displayedPokemon.length;
+    const nextPokemon = pokemonList.slice(offset, offset + 20);
+    setDisplayedPokemon((prevPokemon) => [...prevPokemon, ...nextPokemon]);
   };
-
+  
   const handleSearch = (e) => {
     const searchTerm = e.target.value.toLowerCase();
     const filteredPokemonList = pokemonList.filter((pokemon) =>
       pokemon.name.toLowerCase().includes(searchTerm)
     );
+    setDisplayedPokemon(filteredPokemonList.slice(0, 20));
     setSearchTerm(e.target.value);
   };
-
+  
   const handlePokemonClick = (id) => {
     router.push(`/pokemon/${id}`);
   };
 
-  const filteredPokemonList = pokemonList.filter((pokemon) =>
-    pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    const filteredPokemonList = pokemonList.filter((pokemon) =>
+      pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setDisplayedPokemon(filteredPokemonList.slice(0, 20));
+  }, [pokemonList, searchTerm]);
 
   return (
     <div className={styles.container}>
@@ -67,26 +67,32 @@ const Home = () => {
         className={styles.searchInput}
       />
 
-      <div className={styles.pokemonList}>
-        {filteredPokemonList.slice(0, 20).map((pokemon) => (
-          <div key={pokemon.name} className={styles.pokemonCard}>
-            <img
-              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-                pokemon.url.split("/")[6]
-              }.png`}
-              alt={pokemon.name}
-              onClick={() => handlePokemonClick(pokemon.url.split("/")[6])}
-              className={styles.pokemonImage}
-            />
-            <p className={styles.pokemonName}>{pokemon.name}</p>
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : (
+        <>
+          <div className={styles.pokemonList}>
+            {displayedPokemon.map((pokemon) => (
+              <div key={pokemon.name} className={styles.pokemonCard}>
+                <img
+                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
+                    pokemon.url.split("/")[6]
+                  }.png`}
+                  alt={pokemon.name}
+                  onClick={() => handlePokemonClick(pokemon.url.split("/")[6])}
+                  className={styles.pokemonImage}
+                />
+                <p className={styles.pokemonName}>{pokemon.name}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      {filteredPokemonList.length > 20 && (
-        <button className={styles.loadMoreButton} onClick={handleLoadMore}>
-          Load More
-        </button>
+          {displayedPokemon.length < pokemonList.length && (
+            <button className={styles.loadMoreButton} onClick={handleLoadMore}>
+              Load More
+            </button>
+          )}
+        </>
       )}
     </div>
   );
