@@ -1,12 +1,18 @@
+.pageContainer {
+  background-color: #353b40;
+  margin: -0.531rem;
+}
+
 .container {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-
+  background-color: #353b40;
 }
 
 .title {
   text-align: center;
+  color: #c2d8ff;
   font-size: 24px;
   margin-bottom: 20px;
 }
@@ -16,6 +22,7 @@
   padding: 10px;
   margin-bottom: 20px;
   font-size: 16px;
+  background-color: #353b40;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
@@ -27,11 +34,11 @@
 }
 
 .pokemonCard {
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  background-color: #404d56;
   padding: 10px;
   text-align: center;
   cursor: pointer;
+  border-radius: 4px;
 }
 
 .pokemonImage {
@@ -42,6 +49,7 @@
 
 .pokemonName {
   text-transform: capitalize;
+  color: #c2d8ff;
 }
 
 .loadMoreButton {

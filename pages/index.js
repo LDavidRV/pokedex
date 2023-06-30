@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import styles from "../styles/Home.module.css";
 
 const Home = () => {
@@ -13,10 +13,12 @@ const Home = () => {
   useEffect(() => {
     fetchPokemonList();
   }, []);
-  
+
   const fetchPokemonList = async () => {
     try {
-      const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1000");
+      const response = await fetch(
+        "https://pokeapi.co/api/v2/pokemon?limit=1000"
+      );
       const data = await response.json();
       setPokemonList(data.results);
       setIsLoading(false);
@@ -24,13 +26,13 @@ const Home = () => {
       console.log(error);
     }
   };
-    
+
   const handleLoadMore = () => {
     const offset = displayedPokemon.length;
     const nextPokemon = pokemonList.slice(offset, offset + 20);
     setDisplayedPokemon((prevPokemon) => [...prevPokemon, ...nextPokemon]);
   };
-  
+
   const handleSearch = (e) => {
     const searchTerm = e.target.value.toLowerCase();
     const filteredPokemonList = pokemonList.filter((pokemon) =>
@@ -39,7 +41,7 @@ const Home = () => {
     setDisplayedPokemon(filteredPokemonList.slice(0, 20));
     setSearchTerm(e.target.value);
   };
-  
+
   const handlePokemonClick = (id) => {
     router.push(`/pokemon/${id}`);
   };
@@ -52,48 +54,55 @@ const Home = () => {
   }, [pokemonList, searchTerm]);
 
   return (
-    <div className={styles.container}>
+    <div className={styles.pageContainer}>
       <Head>
         <title>Pokédex</title>
       </Head>
 
-      <h1 className={styles.title}>Pokédex</h1>
+      <div className={styles.container}>
+        <h1 className={styles.title}>Pokédex</h1>
 
-      <input
-        type="text"
-        placeholder="Search Pokémon"
-        value={searchTerm}
-        onChange={handleSearch}
-        className={styles.searchInput}
-      />
+        <input
+          type="text"
+          placeholder="Search Pokémon"
+          value={searchTerm}
+          onChange={handleSearch}
+          className={styles.searchInput}
+        />
 
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <>
-          <div className={styles.pokemonList}>
-            {displayedPokemon.map((pokemon) => (
-              <div key={pokemon.name} className={styles.pokemonCard}>
-                <img
-                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-                    pokemon.url.split("/")[6]
-                  }.png`}
-                  alt={pokemon.name}
-                  onClick={() => handlePokemonClick(pokemon.url.split("/")[6])}
-                  className={styles.pokemonImage}
-                />
-                <p className={styles.pokemonName}>{pokemon.name}</p>
-              </div>
-            ))}
-          </div>
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : (
+          <>
+            <div className={styles.pokemonList}>
+              {displayedPokemon.map((pokemon) => (
+                <div key={pokemon.name} className={styles.pokemonCard}>
+                  <img
+                    src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
+                      pokemon.url.split("/")[6]
+                    }.png`}
+                    alt={pokemon.name}
+                    onClick={() =>
+                      handlePokemonClick(pokemon.url.split("/")[6])
+                    }
+                    className={styles.pokemonImage}
+                  />
+                  <p className={styles.pokemonName}>{pokemon.name}</p>
+                </div>
+              ))}
+            </div>
 
-          {displayedPokemon.length < pokemonList.length && (
-            <button className={styles.loadMoreButton} onClick={handleLoadMore}>
-              Load More
-            </button>
-          )}
-        </>
-      )}
+            {displayedPokemon.length < pokemonList.length && (
+              <button
+                className={styles.loadMoreButton}
+                onClick={handleLoadMore}
+              >
+                Load More
+              </button>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };
